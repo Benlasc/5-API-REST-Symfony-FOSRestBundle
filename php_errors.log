@@ -1,0 +1,3 @@
+[16-Sep-2021 11:41:00 Europe/Paris] PHP Warning:  Array to string conversion in C:\Users\Benoit\Desktop\Openclassrooms\Projet 7\BileMo\eff.php on line 5
+[16-Sep-2021 11:41:00 Europe/Paris] PHP Stack trace:
+[16-Sep-2021 11:41:00 Europe/Paris] PHP   1. {main}() C:\Users\Benoit\Desktop\Openclassrooms\Projet 7\BileMo\eff.php:0
