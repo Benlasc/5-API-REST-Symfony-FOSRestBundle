@@ -19,32 +19,16 @@ class SmartPhoneRepository extends ServiceEntityRepository
         parent::__construct($registry, SmartPhone::class);
     }
 
-    // /**
-    //  * @return SmartPhone[] Returns an array of SmartPhone objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    public function findBrand(?string $brand = null, string $price)
     {
-        return $this->createQueryBuilder('s')
-            ->andWhere('s.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('s.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
+        $qb = $this->createQueryBuilder('s')
+                   ->orderBy('s.price', $price);
 
-    /*
-    public function findOneBySomeField($value): ?SmartPhone
-    {
-        return $this->createQueryBuilder('s')
-            ->andWhere('s.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+        if ($brand) {
+            $qb->Where('s.brand =:brand')
+                ->setParameter(':brand', $brand);
+        }
+
+        return $qb->getQuery()->getResult();
     }
-    */
 }
