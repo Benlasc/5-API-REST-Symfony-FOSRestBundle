@@ -49,6 +49,16 @@ class SmartPhone
      */
     private $users;
 
+    /**
+     * @ORM\Column(type="string", length=50)
+     */
+    private $color;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $size;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
@@ -142,6 +152,30 @@ class SmartPhone
         if ($this->users->removeElement($user)) {
             $user->removeSmartPhone($this);
         }
+
+        return $this;
+    }
+
+    public function getColor(): ?string
+    {
+        return $this->color;
+    }
+
+    public function setColor(string $color): self
+    {
+        $this->color = $color;
+
+        return $this;
+    }
+
+    public function getSize(): ?int
+    {
+        return $this->size;
+    }
+
+    public function setSize(int $size): self
+    {
+        $this->size = $size;
 
         return $this;
     }
