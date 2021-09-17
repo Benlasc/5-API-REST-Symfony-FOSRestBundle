@@ -1,0 +1,10 @@
+nelmio_api_doc:
+    documentation:
+        info:
+            title: BileMo API
+            description: API destinée aux entreprises souhaitant accéder au catalogue de smartphones de BileMo
+            version: 1.0.0
+    areas: # to filter documented areas
+        path_patterns:
+            - ^/api(?!/doc$) # Accepts routes under /api except /api/doc
+            - ^/phone\.*

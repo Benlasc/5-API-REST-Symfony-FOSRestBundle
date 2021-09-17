@@ -7,9 +7,20 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
+use Hateoas\Configuration\Annotation as Hateoas;
 
 /**
  * @ORM\Entity(repositoryClass=SmartPhoneRepository::class)
+ * 
+ * @Hateoas\Relation( 
+ *      "self", 
+ *      href = @Hateoas\Route( 
+ *          "show", 
+ *          parameters = { "id" = "expr(object.getId())" },
+ *          absolute = true
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(groups={"list"}) 
+ * ) 
  */
 class SmartPhone
 {
@@ -22,30 +33,31 @@ class SmartPhone
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Serializer\Groups({"list"})
+     * @Serializer\Groups({"list","details"})
      */
     private $brand;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Serializer\Groups({"list"})
+     * @Serializer\Groups({"list","details"})
      */
     private $model;
 
     /**
      * @ORM\Column(type="text")
+     * @Serializer\Groups({"details"})
      */
     private $description;
 
     /**
      * @ORM\Column(type="decimal", precision=6, scale=2)
-     * @Serializer\Groups({"list"})
+     * @Serializer\Groups({"list","details"})
      */
     private $price;
 
     /**
      * @ORM\Column(type="date")
-     * @Serializer\Groups({"list"})
+     * @Serializer\Groups({"list","details"})
      */
     private $releaseDate;
 
@@ -56,11 +68,13 @@ class SmartPhone
 
     /**
      * @ORM\Column(type="string", length=50)
+     * @Serializer\Groups({"details"})
      */
     private $color;
 
     /**
      * @ORM\Column(type="integer")
+     * @Serializer\Groups({"details"})
      */
     private $size;
 
