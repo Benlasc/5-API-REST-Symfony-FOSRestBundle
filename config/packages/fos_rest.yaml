@@ -28,4 +28,10 @@ fos_rest:
     format_listener:
         rules:
             - { path: '^/', priorities: ['json'], fallback_format: 'json' }
+    exception: 
+        enabled: true 
+        codes: 
+           { App\Exceptions\ResourceNotFoundException: 404 }
+        messages: 
+           { App\Exceptions\ResourceNotFoundException: true }                   
     
