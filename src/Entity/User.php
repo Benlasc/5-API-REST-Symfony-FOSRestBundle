@@ -57,6 +57,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $name;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $googleId;
+
     public function __construct()
     {
         $this->smartPhones = new ArrayCollection();
@@ -226,6 +231,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setName(string $name): self
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function getGoogleId(): ?string
+    {
+        return $this->googleId;
+    }
+
+    public function setGoogleId(string $googleId): self
+    {
+        $this->googleId = $googleId;
 
         return $this;
     }

@@ -4,7 +4,21 @@ nelmio_api_doc:
             title: BileMo API
             description: API destinée aux entreprises souhaitant accéder au catalogue de smartphones de BileMo
             version: 1.0.0
+        components:
+            securitySchemes:
+                OAuth2:
+                    type: oauth2
+                    flows:
+                      authorizationCode:
+                        authorizationUrl: http://127.0.0.1/connect/google
+                        tokenUrl: http://127.0.0.1/connect/google/check
+                        scopes:
+                          read: Grants read access
+        security:
+            - OAuth2:
+                - read                           
     areas: # to filter documented areas
         path_patterns:
             - ^/api(?!/doc$) # Accepts routes under /api except /api/doc
             - ^/phone\.*
+            - ^/client\.*         

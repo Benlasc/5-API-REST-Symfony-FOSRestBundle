@@ -17,4 +17,5 @@ return [
     JMS\SerializerBundle\JMSSerializerBundle::class => ['all' => true],
     Bazinga\Bundle\HateoasBundle\BazingaHateoasBundle::class => ['all' => true],
     Nelmio\ApiDocBundle\NelmioApiDocBundle::class => ['all' => true],
+    KnpU\OAuth2ClientBundle\KnpUOAuth2ClientBundle::class => ['all' => true],
 ];
