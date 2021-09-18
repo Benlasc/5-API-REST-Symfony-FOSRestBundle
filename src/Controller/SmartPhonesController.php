@@ -50,7 +50,7 @@ class SmartPhonesController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Get("/phone/{id}", name="show", requirements = {"id"="\d+"})
+     * @Rest\Get("/phone/{id}", name="showPhone", requirements = {"id"="\d+"})
      * @Rest\View( 
      *     statusCode = 200, 
      *     serializerGroups = {"details"} 

@@ -4,9 +4,24 @@ namespace App\Entity;
 
 use App\Repository\UserClientRepository;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serializer;
+use Hateoas\Configuration\Annotation as Hateoas;
+
+
 
 /**
  * @ORM\Entity(repositoryClass=UserClientRepository::class)
+ * 
+ * @Hateoas\Relation( 
+ *      "self", 
+ *      href = @Hateoas\Route( 
+ *          "showClient",
+ *          parameters = { "id" = "expr(object.getId())" },
+ *          absolute = true
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(groups={"list"})
+ * )
+ * 
  */
 class UserClient
 {
@@ -19,21 +34,25 @@ class UserClient
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Serializer\Groups({"details"})
      */
     private $firstName;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Serializer\Groups({"details"})
      */
     private $lastName;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Serializer\Groups({"list","details"})
      */
     private $email;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Serializer\Groups({"list","details"})
      */
     private $login;
 
