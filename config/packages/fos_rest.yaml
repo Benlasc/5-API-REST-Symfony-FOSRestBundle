@@ -31,7 +31,7 @@ fos_rest:
     exception: 
         enabled: true 
         codes: 
-           { App\Exceptions\ResourceNotFoundException: 404 }
+           { App\Exceptions\ResourceNotFoundException: 404, App\Exceptions\ResourceForbiddenException: 403 }
         messages: 
-           { App\Exceptions\ResourceNotFoundException: true }                   
+           { App\Exceptions\ResourceNotFoundException: true, App\Exceptions\ResourceForbiddenException: true }              
     
