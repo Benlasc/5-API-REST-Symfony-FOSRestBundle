@@ -39,6 +39,8 @@ class GoogleAuthenticator extends OAuth2Authenticator
     public function supports(Request $request): ?bool
     {
         // continue ONLY if the current ROUTE matches the check ROUTE
+        $a = $request->query->get('state');
+        $b = $request->getSession()->get('knpu.oauth2_client_state');
         return $request->attributes->get('_route') === 'connect_google_check';
     }
 

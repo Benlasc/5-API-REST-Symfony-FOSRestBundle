@@ -8,17 +8,15 @@ nelmio_api_doc:
             securitySchemes:
                 OAuth2:
                     type: oauth2
+                    description: This API uses Google's OAuth 2.0 server to authenticate users.
                     flows:
                       authorizationCode:
-                        authorizationUrl: http://127.0.0.1/connect/google
-                        tokenUrl: http://127.0.0.1/connect/google/check
+                        authorizationUrl: https://accounts.google.com/o/oauth2/v2/auth
+                        tokenUrl: https://www.googleapis.com/oauth2/v4/token
                         scopes:
-                          read: Grants read access
-        security:
-            - OAuth2:
-                - read                           
+                          'email': 'Allow to retrieve user email'                       
     areas: # to filter documented areas
         path_patterns:
             - ^/api(?!/doc$) # Accepts routes under /api except /api/doc
             - ^/phone\.*
-            - ^/client\.*         
+            - ^/client\.*
