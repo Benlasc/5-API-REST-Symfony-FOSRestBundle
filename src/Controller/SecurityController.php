@@ -2,18 +2,36 @@
 
 namespace App\Controller;
 
+use App\Security\GetGoogleAccessToken;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use FOS\RestBundle\Controller\Annotations as Rest;
+use OpenApi\Annotations as OA;
+use Nelmio\ApiDocBundle\Annotation\Security;
 use Symfony\Component\Routing\Annotation\Route;
 
 class SecurityController extends AbstractController
 {
     /**
-     * Link to this controller to start the "connect" process
-     *
-     * @Route("/connect/google", name="connect_google_start")
+     * @Rest\Get("/getToken", name="connect_google_start")
+     * @OA\Get(
+     *      tags={"Security"},
+     *      description="Route to get your access token. Use this route in a browser to allow authentication by the google oauth2 server.",
+     *      @OA\Response(
+     *          response="200",
+     *          description="The access token provided by the google oauth2 server",
+     *          @OA\JsonContent(@OA\Property(property="Your new access token : ", type="string", example="545dfzefzegr6er8rg..."))
+     *      ),
+     *      @OA\Response(
+     *          response="404",
+     *          description="If the Google user does not exist in the database",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="code", type="integer", example="404"),
+     *              @OA\Property(property="message", type="string", example="You are not registered in our database"))
+     *      ),
+     * )
      */
     public function connect(ClientRegistry $clientRegistry):RedirectResponse
     {
@@ -30,17 +48,12 @@ class SecurityController extends AbstractController
      *
      * @Route("/connect/google/check", name="connect_google_check")
      */
-    public function connectCheck(Request $request, ClientRegistry $clientRegistry)
+    public function connectCheck(GetGoogleAccessToken $getGoogleAccessToken)
     {
-        // ** if you want to *authenticate* the user, then
-        // leave this method blank and create a Guard authenticator
-    }
+        $response = [
+            "Your new access token" => $getGoogleAccessToken->get()
+        ];
 
-    /**
-     * @Route("/logout", name="app_logout")
-     */
-    public function logout()
-    {
-        throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
+        return new Response(json_encode($response));
     }
 }

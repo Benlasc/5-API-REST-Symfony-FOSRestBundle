@@ -2,21 +2,40 @@ nelmio_api_doc:
     documentation:
         info:
             title: BileMo API
-            description: API destinée aux entreprises souhaitant accéder au catalogue de smartphones de BileMo
+            description: |
+                API for enterprises to access the BileMo smartphone catalogue.
+
+                To use the "Smartphones" and "Your clients" routes, you must provide the following header:
+
+                    Authorization : bearer a87e020B...
+
+                To get your token, use the "getToken" route.
+
             version: 1.0.0
+            contact:
+                name: API Support
+                email: support@example.com
+                url: http://example.com/support
         components:
             securitySchemes:
-                OAuth2:
-                    type: oauth2
-                    description: This API uses Google's OAuth 2.0 server to authenticate users.
-                    flows:
-                      authorizationCode:
-                        authorizationUrl: https://accounts.google.com/o/oauth2/v2/auth
-                        tokenUrl: https://www.googleapis.com/oauth2/v4/token
-                        scopes:
-                          'email': 'Allow to retrieve user email'                       
+                # OAuth2:
+                #     type: oauth2
+                #     description: This API uses the Google OAuth 2.0 server to get an access token.
+                #     flows:
+                #       authorizationCode:
+                #         authorizationUrl: https://accounts.google.com/o/oauth2/v2/auth
+                #         tokenUrl: https://www.googleapis.com/oauth2/v4/token
+                #         scopes:
+                #           'email': 'Allow to retrieve user email'                       '                       
+                bearerAuth:
+                    type: http
+                    description: This API uses an access token to authenticate users.
+                    scheme: bearer
+                    bearerFormat: JWT
+                                          
     areas: # to filter documented areas
         path_patterns:
             - ^/api(?!/doc$) # Accepts routes under /api except /api/doc
             - ^/phone\.*
             - ^/client\.*
+            - ^/getToken

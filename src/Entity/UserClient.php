@@ -6,6 +6,7 @@ use App\Repository\UserClientRepository;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
 use Hateoas\Configuration\Annotation as Hateoas;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -26,6 +27,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     embedded = @Hateoas\Embedded("expr(object.getUser())") 
  * ) 
  * 
+ * @UniqueEntity(fields={"email", "user"}, message="You already have a client with this email.")
  */
 class UserClient
 {
@@ -72,7 +74,7 @@ class UserClient
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="userClients")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $User;
+    private $user;
 
     public function getId(): ?int
     {
@@ -129,12 +131,12 @@ class UserClient
 
     public function getUser(): ?User
     {
-        return $this->User;
+        return $this->user;
     }
 
-    public function setUser(?User $User): self
+    public function setUser(?User $user): self
     {
-        $this->User = $User;
+        $this->user = $user;
 
         return $this;
     }
