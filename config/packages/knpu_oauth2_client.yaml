@@ -11,4 +11,4 @@ knpu_oauth2_client:
             redirect_route: connect_google_check
             redirect_params: {}
             # Décommenter la ligne suivante pour permettre l'authentification dans la doc de l'API
-            # use_state: false
+            use_state: false

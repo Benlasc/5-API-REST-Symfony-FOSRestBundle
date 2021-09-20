@@ -6,8 +6,7 @@ use App\Repository\UserClientRepository;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
 use Hateoas\Configuration\Annotation as Hateoas;
-
-
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=UserClientRepository::class)
@@ -22,6 +21,11 @@ use Hateoas\Configuration\Annotation as Hateoas;
  *      exclusion = @Hateoas\Exclusion(groups={"list"})
  * )
  * 
+ * @Hateoas\Relation( 
+ *     "user", 
+ *     embedded = @Hateoas\Embedded("expr(object.getUser())") 
+ * ) 
+ * 
  */
 class UserClient
 {
@@ -35,24 +39,32 @@ class UserClient
     /**
      * @ORM\Column(type="string", length=255)
      * @Serializer\Groups({"details"})
+     * @Assert\NotBlank
+     * @Assert\Length(max=20)
      */
     private $firstName;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Serializer\Groups({"details"})
+     * @Assert\NotBlank
+     * @Assert\Length(max=20)
      */
     private $lastName;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Serializer\Groups({"list","details"})
+     * @Assert\NotBlank
+     * @Assert\Email
      */
     private $email;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Serializer\Groups({"list","details"})
+     * @Assert\NotBlank
+     * @Assert\Length(min=3)
      */
     private $login;
 
