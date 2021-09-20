@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\UserClient;
+use App\Exception\ResourceValidationException;
 use App\Exceptions\ResourceForbiddenException;
 use App\Exceptions\ResourceNotFoundException;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -11,9 +12,25 @@ use OpenApi\Annotations as OA;
 use OpenApi\Annotations\JsonContent;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Validator\ConstraintViolationList;
 
 class UsersController extends AbstractFOSRestController
 {
+
+    private $request;
+    private $tokenStorage;
+
+    public function __construct(RequestStack $request, TokenStorageInterface $tokenStorage) {
+        $this->request = $request;
+        $this->tokenStorage = $tokenStorage;
+    }
+
     /**
      * @Rest\Get("/clients", name="clients_list")
      * 
@@ -38,6 +55,9 @@ class UsersController extends AbstractFOSRestController
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
         $authenticatedUser = $this->getUser();
+
+        // $this->request->getSession()->invalidate();
+        // $this->tokenStorage->setToken(null);
         
         return $authenticatedUser->getUserClients();
     }
@@ -93,5 +113,66 @@ class UsersController extends AbstractFOSRestController
         } else {
             throw new ResourceNotFoundException("This userClient does not exist in our database");
         }        
-    }    
+    }
+    
+    /**
+     * @Rest\Post(
+     *    path = "/client/new",
+     *    name = "newClient"
+     * )
+     * @Rest\View(StatusCode = 201)
+     * @ParamConverter("userClient", converter="fos_rest.request_body")
+     * 
+     * @OA\Post(
+     *      tags={"Your clients"},
+     *      @OA\Response(
+     *          response="201",
+     *          description="Your new client",
+     *          @OA\JsonContent(ref=@Model(type=UserClient::class, groups={"details"})),
+     *      ),
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(ref=@Model(type=UserClient::class, groups={"details"}))
+     *      )
+     * )
+     * 
+     * @Security(name="OAuth2")
+     * 
+     */
+    public function create(UserClient $userClient, ConstraintViolationList $violations)
+    {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
+        if (count($violations)) {
+            $message = 'The JSON sent contains invalid data. Here are the errors you need to correct: ';
+            foreach ($violations as $violation) {
+                $message .= sprintf("Field %s: %s ", $violation->getPropertyPath(), $violation->getMessage());
+            }
+
+            throw new ResourceValidationException($message);
+        }
+
+        $userClient->setUser($this->getUser());
+
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($userClient);
+        $em->flush();
+
+        return $this->view(
+            $userClient,
+            Response::HTTP_CREATED,
+            ['location' => $this->generateUrl(
+                'app_article_show',
+                ['id' => $userClient->getId()],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            )]
+        );
+    }
+
+    #[Route('/connect', name: 'connexion', methods: ['GET'])]
+    public function connect()
+    {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        return new Response("Vous êtes bien connecté.");
+    }
 }
