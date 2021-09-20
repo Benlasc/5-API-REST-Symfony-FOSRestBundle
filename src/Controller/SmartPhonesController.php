@@ -9,7 +9,12 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use OpenApi\Annotations as OA;
 use OpenApi\Annotations\JsonContent;
 use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Annotation\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
+/**
+ * @IsGranted("IS_AUTHENTICATED_FULLY")
+ */
 class SmartPhonesController extends AbstractFOSRestController
 {
     /**
@@ -33,17 +38,21 @@ class SmartPhonesController extends AbstractFOSRestController
      * 
      * @OA\Get(
      *      tags={"Smartphones"},
+     *      description="Route to see our smartphones",
      *      @OA\Response(
      *          response="200",
      *          description="Our smartphones",
      *          @OA\JsonContent(type="array", @OA\Items(ref=@Model(type=SmartPhone::class, groups={"list"})))
      *      )
      * )
+     * 
+     * @Security(name="bearerAuth")
      */
     public function list($brand, $price)
     {
         $smartPhones = $this->getDoctrine()->getRepository(SmartPhone::class)->findBrand(
-            $brand, $price
+            $brand,
+            $price
         );
 
         return $smartPhones;
@@ -58,6 +67,7 @@ class SmartPhonesController extends AbstractFOSRestController
      * 
      * @OA\Get(
      *      tags={"Smartphones"},
+     *      description="Route to see a smartphone information",
      *      @OA\Parameter(
      *          name="id",
      *          in="path",
@@ -73,10 +83,13 @@ class SmartPhonesController extends AbstractFOSRestController
      *          response="404",
      *          description="If the requested smartphone does not exist in our database",
      *          @OA\JsonContent(
+     *              @OA\Property(property="code", type="integer", example="404"),
      *              @OA\Property(property="message", type="string", example="This phone does not exist in our database")
+     *          )
      *      )
      * )
-     * )
+     * 
+     * @Security(name="bearerAuth")
      */
     public function show(?SmartPhone $smartPhone)
     {
@@ -85,7 +98,5 @@ class SmartPhonesController extends AbstractFOSRestController
         } else {
             throw new ResourceNotFoundException("This phone does not exist in our database");
         }
-        
-        
-    }    
+    }
 }

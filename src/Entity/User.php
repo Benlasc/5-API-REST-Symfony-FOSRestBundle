@@ -48,7 +48,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $smartPhones;
 
     /**
-     * @ORM\OneToMany(targetEntity=UserClient::class, mappedBy="User", orphanRemoval=true, cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity=UserClient::class, mappedBy="user", orphanRemoval=true, cascade={"persist", "remove"})
      */
     private $userClients;
 
