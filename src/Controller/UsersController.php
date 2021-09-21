@@ -32,11 +32,13 @@ class UsersController extends AbstractFOSRestController
 
     private $request;
     private $tokenStorage;
+    private $validator;
 
-    public function __construct(RequestStack $request, TokenStorageInterface $tokenStorage)
+    public function __construct(RequestStack $request, TokenStorageInterface $tokenStorage, ValidatorInterface $validator)
     {
         $this->request = $request;
         $this->tokenStorage = $tokenStorage;
+        $this->validator = $validator;
     }
 
     /**
@@ -161,7 +163,7 @@ class UsersController extends AbstractFOSRestController
      * @Security(name="bearerAuth")
      * 
      */
-    public function create(UserClient $userClient, ConstraintViolationList $violations, ValidatorInterface $validator)
+    public function create(UserClient $userClient, ConstraintViolationList $violations)
     {
         if (count($violations)) {
             $message = 'The JSON sent contains invalid data. Here are the errors you need to correct: ';
@@ -171,11 +173,10 @@ class UsersController extends AbstractFOSRestController
             throw new ResourceValidationException($message);
         }
 
-
         $userClient->setUser($this->getUser());
 
         // A User must not have two clients with the same address
-        if ($validator->validate($userClient)->count()) {
+        if ($this->validator->validate($userClient)->count()) {
             throw new ResourceValidationException("You already have a client with this email.");
         }
 
@@ -252,6 +253,88 @@ class UsersController extends AbstractFOSRestController
                 ];
 
                 return new Response(json_encode($response), 200);
+            } else {
+                throw new ResourceForbiddenException("This client is not yours");
+            }
+        } else {
+            throw new ResourceNotFoundException("This userClient does not exist in our database");
+        }
+    }
+    /**
+     * @Rest\Put(
+     *     path = "/client/{id}",
+     *     name = "updateClient",
+     *     requirements = {"id"="\d+"}
+     * )
+
+     * @Rest\View( 
+     *     statusCode = 200, 
+     *     serializerGroups = {"details"} 
+     * )
+     * 
+     * @ParamConverter("newUserClient", converter="fos_rest.request_body")
+     * 
+     * @OA\Put(
+     *      tags={"Your clients"},
+     *      description="Route to update a client",
+     *      @OA\Parameter(
+     *          name="id",
+     *          in="path",
+     *          description="Resource id",
+     *          @OA\Schema(type="integer")
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Returns updated client",
+     *          @OA\JsonContent(ref=@Model(type=UserClient::class, groups={"details"})),
+     *      ),
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(ref=@Model(type=UserClient::class, groups={"details"}))
+     *      ),
+     *      @OA\Response(
+     *          response="404",
+     *          description="If the requested UserClient does not exist in our database",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="code", type="integer", example="404"),
+     *              @OA\Property(property="message", type="string", example="This client does not exist in our database"))
+     *      ),
+     *      @OA\Response(
+     *          response="403",
+     *          description="If the requested UserClient is not a client of the User",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="code", type="integer", example="403"),
+     *              @OA\Property(property="message", type="string", example="This client is not yours"))
+     *      ),
+     * )
+     * 
+     * @Security(name="bearerAuth")
+     */
+    public function update(UserClient $userClient, UserClient $newUserClient, ConstraintViolationList $violations)
+    {
+        if (count($violations)) {
+            $message = 'The JSON sent contains invalid data. Here are the errors you need to correct: ';
+            foreach ($violations as $violation) {
+                $message .= sprintf("Field %s: %s ", $violation->getPropertyPath(), $violation->getMessage());
+            }
+            throw new ResourceValidationException($message);
+        }
+
+        // A User must not have two clients with the same address
+        if ($this->validator->validate($newUserClient)->count()) {
+            throw new ResourceValidationException("You already have a client with this email.");
+        }
+
+        $authenticatedUser = $this->getUser();
+
+        if ($userClient) {
+            if ($userClient->getUser() === $authenticatedUser) {
+                $userClient->setEmail($newUserClient->getEmail())
+                    ->setFirstName($newUserClient->getFirstName())
+                    ->setLastName($newUserClient->getLastName())
+                    ->setLogin($newUserClient->getLogin());
+                $this->getDoctrine()->getManager()->flush();
+                return $userClient;
             } else {
                 throw new ResourceForbiddenException("This client is not yours");
             }

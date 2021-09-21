@@ -23,6 +23,16 @@ use Symfony\Component\Validator\Constraints as Assert;
  * )
  * 
  * @Hateoas\Relation( 
+ *      "update", 
+ *      href = @Hateoas\Route( 
+ *          "updateClient", 
+ *          parameters = { "id" = "expr(object.getId())" }, 
+ *          absolute = true 
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(groups={"list"}) 
+ * )
+ * 
+ * @Hateoas\Relation( 
  *      "delete", 
  *      href = @Hateoas\Route( 
  *          "deleteClient", 
