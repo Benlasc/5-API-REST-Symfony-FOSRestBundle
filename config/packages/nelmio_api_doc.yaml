@@ -32,7 +32,47 @@ nelmio_api_doc:
                     description: This API uses an access token to authenticate users.
                     scheme: bearer
                     bearerFormat: JWT
-                                          
+            responses:
+              Unauthorized:
+                description: "Unauthorized - See examples for possible messages"
+                content:
+                  application/json:
+                    schema:
+                      oneOf:
+                        - ref: "#/components/schemas/MissingToken"
+                        - ref: "#/components/schemas/ExpiredToken"
+                    examples:
+                      MissingToken:
+                        summary: MissingToken
+                        value:
+                          code: 401
+                          message: Full authentication is required to access this resource.
+                      ExpiredToken:
+                        summary: ExpiredToken
+                        value:
+                          code: 401
+                          message: Your access token is not valid :(                          
+            schemas:
+              MissingToken:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    const: 401
+                  message:
+                    type: string
+                    const: "Full authentication is required to access this resource."
+              ExpiredToken:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    const: 401
+                  message:
+                    type: string
+                    const: "Your access token is not valid :("                       
+
+
     areas: # to filter documented areas
         path_patterns:
             - ^/api(?!/doc$) # Accepts routes under /api except /api/doc

@@ -17,8 +17,8 @@ class SecurityController extends AbstractController
     /**
      * @Rest\Get("/getToken", name="connect_google_start")
      * @OA\Get(
-     *      tags={"Security"},
-     *      description="Route to get your access token. Use this route in a browser to allow authentication by the google oauth2 server.",
+     *      tags={"Get your access token (need a Google account)"},
+     *      description="Route to get or refresh your access token. Use this route in a browser to allow authentication by the google oauth2 server.",
      *      @OA\Response(
      *          response="200",
      *          description="The access token provided by the google oauth2 server",
@@ -26,7 +26,7 @@ class SecurityController extends AbstractController
      *      ),
      *      @OA\Response(
      *          response="404",
-     *          description="If the Google user does not exist in the database",
+     *          description="If the Google user does not exist in our database",
      *          @OA\JsonContent(
      *              @OA\Property(property="code", type="integer", example="404"),
      *              @OA\Property(property="message", type="string", example="You are not registered in our database"))
@@ -54,6 +54,6 @@ class SecurityController extends AbstractController
             "Your new access token" => $getGoogleAccessToken->get()
         ];
 
-        return new Response(json_encode($response));
+        return new Response(json_encode($response), 200);
     }
 }
