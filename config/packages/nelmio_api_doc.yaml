@@ -5,7 +5,7 @@ nelmio_api_doc:
             description: |
                 API for enterprises to access the BileMo smartphone catalogue.
 
-                To use the "Smartphones" and "Your clients" routes, you must provide the following header:
+                To use "Smartphones" and "Your clients" routes, you must provide the following header:
 
                     Authorization : bearer a87e020B...
 
