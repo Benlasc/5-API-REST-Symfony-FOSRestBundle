@@ -6,6 +6,7 @@ use App\Entity\UserClient;
 use App\Exception\ResourceValidationException;
 use App\Exceptions\ResourceForbiddenException;
 use App\Exceptions\ResourceNotFoundException;
+use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use OpenApi\Annotations as OA;
 use OpenApi\Annotations\JsonContent;
@@ -26,7 +27,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  * 
  * @OA\Response (response="401", ref="#/components/responses/Unauthorized")
  */
-class UsersController extends MyAbstractController
+class UsersController extends AbstractFOSRestController
 {
 
     private $request;
@@ -162,7 +163,6 @@ class UsersController extends MyAbstractController
      */
     public function create(UserClient $userClient, ConstraintViolationList $violations, ValidatorInterface $validator)
     {
-
         if (count($violations)) {
             $message = 'The JSON sent contains invalid data. Here are the errors you need to correct: ';
             foreach ($violations as $violation) {
@@ -170,6 +170,7 @@ class UsersController extends MyAbstractController
             }
             throw new ResourceValidationException($message);
         }
+
 
         $userClient->setUser($this->getUser());
 
@@ -235,7 +236,7 @@ class UsersController extends MyAbstractController
      * 
      * @Security(name="bearerAuth")
      */
-    public function delete(UserClient $userClient)
+    public function delete(?UserClient $userClient)
     {
 
         $authenticatedUser = $this->getUser();

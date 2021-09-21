@@ -23,8 +23,13 @@ use Symfony\Component\Validator\Constraints as Assert;
  * )
  * 
  * @Hateoas\Relation( 
- *     "user", 
- *     embedded = @Hateoas\Embedded("expr(object.getUser())") 
+ *      "delete", 
+ *      href = @Hateoas\Route( 
+ *          "deleteClient", 
+ *          parameters = { "id" = "expr(object.getId())" }, 
+ *          absolute = true 
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(groups={"list"}) 
  * ) 
  * 
  * @UniqueEntity(fields={"email", "user"}, message="You already have a client with this email.")

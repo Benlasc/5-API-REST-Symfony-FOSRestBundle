@@ -140,7 +140,8 @@ class SmartPhonesFixtures extends Fixture
                         "email" => "juju@mdomain.fr",
                         "login" => "BlueVif"
                     ],
-                ]
+                ],
+                "google_id" => "574165526987454792365"
             ],
             "Dual Tech" =>
             [
@@ -167,7 +168,8 @@ class SmartPhonesFixtures extends Fixture
                         "email" => "CatherineMaillet@mdomain.fr",
                         "login" => "Cathy"
                     ],
-                ]
+                ],
+                "google_id" => "319236956763443039174"
             ],
             "Aqua Phone" =>
             [
@@ -194,7 +196,8 @@ class SmartPhonesFixtures extends Fixture
                         "email" => "valletColette@mdomain.fr",
                         "login" => "CocoVal"
                     ],
-                ]
+                ],
+                "google_id" => "559714487848565168621"
             ],
         ];
 
@@ -205,7 +208,8 @@ class SmartPhonesFixtures extends Fixture
                     ->setEmail($userInformations['email'])
                     ->setPassword($this->encoder->hashPassword($newUser, $passWord))
                     ->setRoles($userInformations['roles'])
-                    ->setToken($userInformations['token']);
+                    ->setToken($userInformations['token'])
+                    ->setGoogleId($userInformations['google_id']);
             foreach ($userInformations['userClients'] as $userClient) {
                 $newUserClient = new UserClient();
                 $newUserClient->setFirstName($userClient["first_name"])

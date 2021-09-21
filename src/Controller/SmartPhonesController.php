@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\SmartPhone;
 use App\Exceptions\ResourceNotFoundException;
+use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use OpenApi\Annotations as OA;
 use OpenApi\Annotations\JsonContent;
@@ -16,7 +17,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
  * @OA\Response (response="401", ref="#/components/responses/Unauthorized")
  * 
  */
-class SmartPhonesController extends MyAbstractController
+class SmartPhonesController extends AbstractFOSRestController
 {
     /**
      * @Rest\Get("/phones", name="phones_list")
