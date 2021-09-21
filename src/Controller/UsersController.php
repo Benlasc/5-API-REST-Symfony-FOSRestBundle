@@ -6,7 +6,6 @@ use App\Entity\UserClient;
 use App\Exception\ResourceValidationException;
 use App\Exceptions\ResourceForbiddenException;
 use App\Exceptions\ResourceNotFoundException;
-use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use OpenApi\Annotations as OA;
 use OpenApi\Annotations\JsonContent;
@@ -24,14 +23,17 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @IsGranted("IS_AUTHENTICATED_FULLY")
+ * 
+ * @OA\Response (response="401", ref="#/components/responses/Unauthorized")
  */
-class UsersController extends AbstractFOSRestController
+class UsersController extends MyAbstractController
 {
 
     private $request;
     private $tokenStorage;
 
-    public function __construct(RequestStack $request, TokenStorageInterface $tokenStorage) {
+    public function __construct(RequestStack $request, TokenStorageInterface $tokenStorage)
+    {
         $this->request = $request;
         $this->tokenStorage = $tokenStorage;
     }
@@ -64,7 +66,7 @@ class UsersController extends AbstractFOSRestController
 
         // $this->request->getSession()->invalidate();
         // $this->tokenStorage->setToken(null);
-        
+
         return $authenticatedUser->getUserClients();
     }
 
@@ -116,12 +118,12 @@ class UsersController extends AbstractFOSRestController
                 return $userClient;
             } else {
                 throw new ResourceForbiddenException("This client is not yours");
-            }            
+            }
         } else {
             throw new ResourceNotFoundException("This userClient does not exist in our database");
-        }        
+        }
     }
-    
+
     /**
      * @Rest\Post(
      *    path = "/client/new",
@@ -189,5 +191,71 @@ class UsersController extends AbstractFOSRestController
                 UrlGeneratorInterface::ABSOLUTE_URL
             )]
         );
+    }
+
+    /**
+     * @Rest\View(StatusCode = 204)
+     * @Rest\Delete(
+     *     path = "/client/{id}",
+     *     name = "deleteClient",
+     *     requirements = {"id"="\d+"}
+     * )
+     * 
+     * @OA\Delete(
+     *      tags={"Your clients"},
+     *      description="Route to delete a client",
+     *      @OA\Parameter(
+     *          name="id",
+     *          in="path",
+     *          description="Resource id",
+     *          @OA\Schema(type="integer")
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Returns removal confirmation",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="code", type="integer", example="200"),
+     *              @OA\Property(property="message", type="string", example="Confirmed removal of client: user@domain.com"))
+     *      ),
+     *      @OA\Response(
+     *          response="404",
+     *          description="If the requested UserClient does not exist in our database",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="code", type="integer", example="404"),
+     *              @OA\Property(property="message", type="string", example="This client does not exist in our database"))
+     *      ),
+     *      @OA\Response(
+     *          response="403",
+     *          description="If the requested UserClient is not a client of the User",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="code", type="integer", example="403"),
+     *              @OA\Property(property="message", type="string", example="This client is not yours"))
+     *      ),
+     * )
+     * 
+     * @Security(name="bearerAuth")
+     */
+    public function delete(UserClient $userClient)
+    {
+
+        $authenticatedUser = $this->getUser();
+
+        if ($userClient) {
+            if ($userClient->getUser() === $authenticatedUser) {
+                $this->getDoctrine()->getManager()->remove($userClient);
+                $this->getDoctrine()->getManager()->flush();
+
+                $response = [
+                    "Code" => 200,
+                    "Message" => "Confirmed removal of client: " . $userClient->getEmail(),
+                ];
+
+                return new Response(json_encode($response), 200);
+            } else {
+                throw new ResourceForbiddenException("This client is not yours");
+            }
+        } else {
+            throw new ResourceNotFoundException("This userClient does not exist in our database");
+        }
     }
 }

@@ -73,6 +73,11 @@ class GoogleAuthenticator extends OAuth2Authenticator
 
         // return new Response($message, Response::HTTP_FORBIDDEN);
 
-        return new Response("Your access token is not valid :(", 401); 
+        $response = [
+            "Code" => "401",
+            "Message" => "Your access token is not valid :("
+        ];
+
+        return new Response(json_encode($response), 401);
     }
 }
