@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\UserClient;
-use App\Exception\ResourceValidationException;
+use App\Exceptions\ResourceValidationException;
 use App\Exceptions\ResourceForbiddenException;
 use App\Exceptions\ResourceNotFoundException;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
