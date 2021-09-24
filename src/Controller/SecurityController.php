@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use OpenApi\Annotations as OA;
 use Nelmio\ApiDocBundle\Annotation\Security;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 class SecurityController extends AbstractController
@@ -48,7 +49,7 @@ class SecurityController extends AbstractController
      *
      * @Route("/connect/google/check", name="connect_google_check")
      */
-    public function connectCheck(GetGoogleAccessToken $getGoogleAccessToken)
+    public function connectCheck(GetGoogleAccessToken $getGoogleAccessToken,Request $request)
     {
         $response = [
             "Your new access token" => $getGoogleAccessToken->get()

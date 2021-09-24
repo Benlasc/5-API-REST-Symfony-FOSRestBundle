@@ -53,11 +53,8 @@ class GoogleAuthenticator extends OAuth2Authenticator
 
                 if ($existingUser) {
                     return $existingUser;
-                }
-              
+                }             
             }
-            // To test the application -> if the Google user is not registered in our database, we return the first user in the database
-            //return $this->entityManager->getRepository(User::class)->find(1);
         }));
     }
 

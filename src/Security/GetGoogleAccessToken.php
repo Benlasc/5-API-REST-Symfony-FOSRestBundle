@@ -46,8 +46,6 @@ class GetGoogleAccessToken
                         ->setToken($accessTokenValue);
                 $this->em->persist($newUser);
                 $this->em->flush();
-
-                return $newUser;
                 // throw new ResourceNotFoundException("You are not registered in our database");                
             }
             return $accessTokenValue;
