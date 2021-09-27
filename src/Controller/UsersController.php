@@ -49,28 +49,70 @@ class UsersController extends AbstractFOSRestController
      *     serializerGroups = {"list"}
      * )
      * 
+     * @Rest\QueryParam( 
+     *     name="limit", 
+     *     requirements="\d+", 
+     *     default="10", 
+     *     description="Max number of clients per page." 
+     * ) 
+     * @Rest\QueryParam( 
+     *     name="offset", 
+     *     requirements="\d+", 
+     *     default="1", 
+     *     description="The pagination offset" 
+     * )
+     * 
      * @OA\Get(
      *      tags={"Your clients"},
      *      description="Route to see your clients",
+     *      @OA\Parameter(
+     *          name="limit",
+     *          in="query",
+     *          @OA\Schema(type="integer")
+     *      ),
+     *      @OA\Parameter(
+     *          name="offset",
+     *          in="query",
+     *          @OA\Schema(type="integer")
+     *      ),
      *      @OA\Response(
      *          response="200",
      *          description="Your clients",
      *          @OA\JsonContent(type="array", @OA\Items(ref=@Model(type=UserClient::class, groups={"list"})))
+     *      ),
+     *      @OA\Response(
+     *          response="400",
+     *          description="Bad Request",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="code", type="integer", example="400"),
+     *              @OA\Property(property="message", type="string", example="$limit & $offstet must be greater than 0.")
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response="404",
+     *          description="Not Found",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="code", type="integer", example="404"),
+     *              @OA\Property(property="message", type="string", example="Page not Found")
+     *          )
      *      )
      * )
      * 
      * @Security(name="bearerAuth")
      */
-    public function list()
+    public function list($limit, $offset)
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
-        $authenticatedUser = $this->getUser();
+        $idAuthenticatedUser = $this->getUser()->getId();
 
-        // $this->request->getSession()->invalidate();
-        // $this->tokenStorage->setToken(null);
+        $usersClients =  $this->getDoctrine()->getRepository(UserClient::class)->search(
+            $idAuthenticatedUser, 
+            $limit, 
+            $offset
+        );
 
-        return $authenticatedUser->getUserClients();
+        return $usersClients;
     }
 
     /**
@@ -213,7 +255,7 @@ class UsersController extends AbstractFOSRestController
      *          @OA\Schema(type="integer")
      *      ),
      *      @OA\Response(
-     *          response=200,
+     *          response=204,
      *          description="Returns removal confirmation",
      *          @OA\JsonContent(
      *              @OA\Property(property="code", type="integer", example="200"),
@@ -239,7 +281,6 @@ class UsersController extends AbstractFOSRestController
      */
     public function delete(?UserClient $userClient)
     {
-
         $authenticatedUser = $this->getUser();
 
         if ($userClient) {
@@ -247,12 +288,9 @@ class UsersController extends AbstractFOSRestController
                 $this->getDoctrine()->getManager()->remove($userClient);
                 $this->getDoctrine()->getManager()->flush();
 
-                $response = [
-                    "Code" => 200,
-                    "Message" => "Confirmed removal of client: " . $userClient->getEmail(),
-                ];
+                $response = [];
 
-                return new Response(json_encode($response), 200);
+                return new Response(json_encode($response), 204);
             } else {
                 throw new ResourceForbiddenException("This client is not yours");
             }

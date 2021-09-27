@@ -3,7 +3,6 @@
 namespace App\Repository;
 
 use App\Entity\UserClient;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -12,11 +11,21 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method UserClient[]    findAll()
  * @method UserClient[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class UserClientRepository extends ServiceEntityRepository
+class UserClientRepository extends AbstractRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, UserClient::class);
+    }
+
+    public function search(int $userId, int $limit = 20, int $offset = 1)
+    {
+        $qb = $this->createQueryBuilder('u');
+
+        $qb->where('u.user = :user_id')
+           ->setParameter(':user_id', $userId);
+
+        return $this->paginate($qb, $limit, $offset);
     }
 
     // /**

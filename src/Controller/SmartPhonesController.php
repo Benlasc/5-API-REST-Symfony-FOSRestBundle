@@ -31,8 +31,22 @@ class SmartPhonesController extends AbstractFOSRestController
      *     name="price", 
      *     requirements="asc|desc", 
      *     default="asc",
-     *     description="Price sort order (asc or desc)" 
+     *     description="Price sort order (asc or desc)"
      * )
+     * 
+     * @Rest\QueryParam( 
+     *     name="limit", 
+     *     requirements="\d+", 
+     *     default="10", 
+     *     description="Max number of clients per page." 
+     * ) 
+     * @Rest\QueryParam( 
+     *     name="offset", 
+     *     requirements="\d+", 
+     *     default="1", 
+     *     description="The pagination offset" 
+     * )
+     * 
      * @Rest\View( 
      *     statusCode = 200, 
      *     serializerGroups = {"list"}
@@ -41,19 +55,47 @@ class SmartPhonesController extends AbstractFOSRestController
      * @OA\Get(
      *      tags={"Smartphones"},
      *      description="Route to see our smartphones",
+     *      @OA\Parameter(
+     *          name="limit",
+     *          in="query",
+     *          @OA\Schema(type="integer")
+     *      ),
+     *      @OA\Parameter(
+     *          name="offset",
+     *          in="query",
+     *          @OA\Schema(type="integer")
+     *      ),
      *      @OA\Response(
      *          response="200",
      *          description="Our smartphones",
      *          @OA\JsonContent(type="array", @OA\Items(ref=@Model(type=SmartPhone::class, groups={"list"})))
      *      ),
+     *      @OA\Response(
+     *          response="400",
+     *          description="Bad Request",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="code", type="integer", example="400"),
+     *              @OA\Property(property="message", type="string", example="$limit & $offstet must be greater than 0.")
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response="404",
+     *          description="Not Found",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="code", type="integer", example="404"),
+     *              @OA\Property(property="message", type="string", example="Page not Found")
+     *          )
+     *      )
      * )
      * @Security(name="bearerAuth")
      */
-    public function list($brand, $price)
+    public function list($brand, $price, $limit, $offset)
     {
-        $smartPhones = $this->getDoctrine()->getRepository(SmartPhone::class)->findBrand(
+        $smartPhones = $this->getDoctrine()->getRepository(SmartPhone::class)->search(
             $brand,
-            $price
+            $price,
+            $limit,
+            $offset
         );
 
         return $smartPhones;

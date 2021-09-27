@@ -3,7 +3,6 @@
 namespace App\Repository;
 
 use App\Entity\SmartPhone;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -12,23 +11,37 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method SmartPhone[]    findAll()
  * @method SmartPhone[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class SmartPhoneRepository extends ServiceEntityRepository
+class SmartPhoneRepository extends AbstractRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, SmartPhone::class);
     }
 
-    public function findBrand(?string $brand = null, string $price)
+    // public function findBrand(?string $brand = null, string $price)
+    // {
+    //     $qb = $this->createQueryBuilder('s')
+    //                ->orderBy('s.price', $price);
+
+    //     if ($brand) {
+    //         $qb->Where('s.brand =:brand')
+    //             ->setParameter(':brand', $brand);
+    //     }
+
+    //     return $qb->getQuery()->getResult();
+    // }
+
+    public function search(?string $brand = null, string $priceOrder = 'asc', $limit = 10, $offset = 1)
     {
-        $qb = $this->createQueryBuilder('s')
-                   ->orderBy('s.price', $price);
+        $qb = $this
+            ->createQueryBuilder('s')
+            ->orderBy('s.price', $priceOrder);
 
         if ($brand) {
             $qb->Where('s.brand =:brand')
-                ->setParameter(':brand', $brand);
+                   ->setParameter(':brand', $brand);
         }
 
-        return $qb->getQuery()->getResult();
+        return $this->paginate($qb, $limit, $offset);
     }
 }
