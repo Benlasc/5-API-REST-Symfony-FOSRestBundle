@@ -2,7 +2,7 @@
 
 **Projet pédagogique :** créer une API REST permettant aux entreprises de consulter un catalogue de smartphones et gérer des clients. 
 
-## Table of Contents
+## Sommaire
 1.  __[Librairies utilisées](#Librairies-utilisées)__
 
 2.  __[Pré-requis](#Pré-requis)__
